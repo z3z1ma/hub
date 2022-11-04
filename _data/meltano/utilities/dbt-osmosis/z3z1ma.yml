@@ -15,17 +15,21 @@ definition: |
   3. Automation which manages generating, updating, and propagating documentation for your
   `schema.yml` files.
   4. A FastAPI dbt server which principally integrates with the 
-  [VSCode dbt power user extension](https://github.com/innoverio/vscode-dbt-power-user).
+  [VSCode dbt power user extension](https://github.com/z3z1ma/vscode-dbt-power-user).
+  See it on the [marketplace](https://marketplace.visualstudio.com/items?itemName=z3z1ma.vscode-dbt-power-user-osmosis).
 commands:
+  python:
+    args: -O
+    executable: python
   server:
     args:
       server --register-project --project-dir ${MELTANO_PROJECT_ROOT}/transform --profiles-dir
-      ${MELTANO_PROJECT_ROOT}/transform/profiles/${ADAPTER}
+      ${MELTANO_PROJECT_ROOT}/transform/profiles/${ADAPTER} --host 0.0.0.0
     description: |
       Start a server exposing two primary endpoints. /compile and /run which receive POST
       requests and compile or run dbt SQL against your dbt profile. It is significantly faster 
       and simpler than dbt RPC and internally does not rely on it. This server is compatible with 
-      https://github.com/innoverio/vscode-dbt-power-user providing VS code users interactive
+      https://github.com/z3z1ma/vscode-dbt-power-user providing VS code users interactive
       query previews via a simple ▶️ button or Cmd+Enter.
   workbench:
     args:
@@ -78,3 +82,35 @@ next_steps: |
 
   4. Ensure you additionally add `adapter: ...` to your dbt-osmosis config for the built
   in commands to work. ie for Bigquery, `adapter: bigquery`
+
+  ## Osmosis Power User specific notes:
+
+  Add a shim to your repository like this:
+
+  UNIX/POSIX (TESTED)
+
+  ```sh
+  cat >shims/dbt-python << EOF
+  #!/bin/sh
+  meltano invoke dbt-osmosis:python "$@"
+  EOF
+  ```
+
+  WINDOWS (UNTESTED)
+
+  Create a file in the repo at shims/dbt-python with the contents below
+
+  ```bat
+  @echo off
+  meltano invoke dbt-osmosis:python %*
+  ```
+
+  Add this key/value to your settings.json in VS Code:
+
+  ```json
+  {
+      "dbt.dbtPythonPath": "shims/dbt-python",
+  }
+  ```
+
+  Or edit the setting directly in VS Code settings menu.
