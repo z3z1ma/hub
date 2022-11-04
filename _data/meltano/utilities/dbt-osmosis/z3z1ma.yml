@@ -21,6 +21,9 @@ commands:
   python:
     args: -O
     executable: python
+    description:
+      Exposes an entrypoint for the virtual environment allowing integrations
+      such as dbt power user to function
   server:
     args:
       server --register-project --project-dir ${MELTANO_PROJECT_ROOT}/transform --profiles-dir
